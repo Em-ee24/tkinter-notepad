@@ -1,4 +1,3 @@
-from lib2to3.pytree import Node
 import tkinter as tk
 import tkinter.messagebox as mb
 import tkinter.filedialog as filedialog
@@ -71,14 +70,21 @@ class Notepad:
 
         # Extra window configs and key bindings.
         self.__root.config(menu=self.__menuBar)
+        self.__root.bind("<Control-o>", func=self.__loadFile)
+        self.__root.bind("<Command-o>", func=self.__loadFile)
         self.__root.bind("<Control-w>", func=self.__exitProcess)
+        self.__root.bind("<Command-w>", func=self.__exitProcess)
         self.__root.bind("<Control-s>", func=self.__saveFile)
+        self.__root.bind("<Command-s>", func=self.__saveFile)
+        self.__root.bind("<Control-c>", func=self.__copySelected)
+        self.__root.bind("<Command-c>", func=self.__copySelected)
+        self.__root.bind("<Control-z>", func=self.__undo)
+        self.__root.bind("<Command-z>", func=self.__undo)
+        self.__root.bind("<Control-Z>", func=self.__redo)
+        self.__root.bind("<Command-Z>", func=self.__redo)
         self.__root.bind("<KeyPress>", func=lambda event: self.__setSaved(saved=False))
         self.__root.bind("<space>", func=self.__addUndoStep)
         self.__root.bind("<Return>", func=self.__addUndoStep)
-        self.__root.bind("<Control-c>", func=self.__copySelected)
-        self.__root.bind("<Control-z>", func=self.__undo)
-        self.__root.bind("<Control-Z>", func=self.__redo)
         self.__root.bind("<BackSpace>", func=self.__addUndoStep)
 
     # Can be used to create or clear the stacks.
@@ -101,7 +107,7 @@ class Notepad:
         return
 
     # Loads text file from user's computer.
-    def __loadFile(self):
+    def __loadFile(self, event=None):
 
         # Gets the directory of the file.
         self.__fileName = filedialog.askopenfilename(
