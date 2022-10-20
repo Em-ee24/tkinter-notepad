@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as mb
 import tkinter.filedialog as filedialog
-
+import styles
 from stack import Stack, CustomNode
 
 class Notepad:
@@ -32,7 +32,7 @@ class Notepad:
         self.__root.protocol("WM_DELETE_WINDOW", self.__exitProcess)
 
         # Create the area where the text is typed.
-        self.__textArea = tk.Text(self.__root)
+        self.__textArea = tk.Text(self.__root, font=(styles.font, 11))
         self.__textArea.grid(row=0, column=0, sticky='news')
         self.__textArea.focus()
 
@@ -47,16 +47,16 @@ class Notepad:
 
         # Set of options regarding the file.
         self.__fileOptions = tk.Menu(self.__menuBar , tearoff=0)
-        self.__fileOptions.add_command(label="Open File", command=self.__loadFile)
-        self.__fileOptions.add_command(label="Save", command=self.__saveFile)
-        self.__fileOptions.add_command(label="Exit", command=self.__exitProcess)
+        self.__fileOptions.add_command(label="Open File", command=self.__loadFile, accelerator="⌘+O" if styles.mac else "Ctrl+O")
+        self.__fileOptions.add_command(label="Save", command=self.__saveFile, accelerator="⌘+S" if styles.mac else "Ctrl+S")
+        self.__fileOptions.add_command(label="Exit", command=self.__exitProcess, accelerator="⌘+W" if styles.mac else "Ctrl+W")
 
         # Set of options regarding the text inside the file.
         self.__editOptions = tk.Menu(self.__menuBar, tearoff=0)
-        self.__editOptions.add_command(label="Copy", command=self.__copySelected)
-        self.__editOptions.add_command(label="Paste", command=self.__pasteSelected)
-        self.__editOptions.add_command(label="Undo", command=self.__undo)
-        self.__editOptions.add_command(label="Redo", command=self.__redo)
+        self.__editOptions.add_command(label="Copy", command=self.__copySelected, accelerator="⌘+C" if styles.mac else "Ctrl+C")
+        self.__editOptions.add_command(label="Paste", command=self.__pasteSelected, accelerator="⌘+V" if styles.mac else "Ctrl+V")
+        self.__editOptions.add_command(label="Undo", command=self.__undo, accelerator="⌘+Z" if styles.mac else "Ctrl+Z")
+        self.__editOptions.add_command(label="Redo", command=self.__redo, accelerator="⌘+Shift+Z" if styles.mac else "Ctrl+Shift+Z")
         self.__editOptions.add_command(label="Start Fresh", command=self.__emptyFile)
 
         # Set of options regarding app help.
@@ -87,12 +87,9 @@ class Notepad:
         self.__root.bind("<Return>", func=self.__addUndoStep)
         self.__root.bind("<BackSpace>", func=self.__addUndoStep)
 
-    # Can be used to create or clear the stacks.
+    # Can be used to create or clear the undo/redo stacks.
     def __clearStacks(self):
-         # Undo Stack initialised
         self.__undoStack = Stack()
-
-        # Redo Stack initialised
         self.__redoStack = Stack()
         return
 
