@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as mb
 import tkinter.filedialog as filedialog
-import styles
+import styles, detect
 from stack import Stack, CustomNode
 
 class Notepad:
@@ -32,48 +32,73 @@ class Notepad:
         self.__root.protocol("WM_DELETE_WINDOW", self.__exitProcess)
         self.__root.config()
 
-        # Creates a menu frame at the top of the app window.
-        self.__menuFrame = tk.Frame(self.__root, background=styles.menu_background)
-        self.__menuFrame.grid(row=0, column=0, sticky='news')
+        if detect.windows:
 
-        # Create the dropdown heading for the file options.
-        self.__fileMenu = tk.Menubutton(self.__menuFrame, text="File", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
-        self.__fileMenu.grid(row=0, column=0, padx=5)
+            # Creates a menu frame at the top of the app window.
+            self.__menuFrame = tk.Frame(self.__root, background=styles.menu_background)
+            self.__menuFrame.grid(row=0, column=0, sticky='news')
+
+            # Create the dropdown heading for the file options.
+            self.__fileMenu = tk.Menubutton(self.__menuFrame, text="File", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+            self.__fileMenu.grid(row=0, column=0, padx=5)
+
+            # Set of options regarding the file.
+            self.__fileOptions = tk.Menu(self.__fileMenu , tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
+
+            # Configure the file menu so that the file options show.
+            self.__fileMenu.config(menu=self.__fileOptions)
+
+            # Create the dropdown heading for the edit options.
+            self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground,  )
+            self.__editMenu.grid(row=0, column=1, padx=5)
+
+            # Set of options regarding text operations.
+            self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
+
+            # Configure the edit menu so that the edit options show.
+            self.__editMenu.config(menu=self.__editOptions)
+
+            # Create the dropdown heading for the help options.
+            self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+            self.__helpMenu.grid(row=0, column=2, padx=5)
+
+            # Set of options regarding app help.
+            self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
+
+            # Configure the help menu so that the help options show.
+            self.__helpMenu.config(menu=self.__helpOptions)
+
+        else:
+
+            self.__menuBar = tk.Menu(self.__root)
+
+            # Create the three menu dropdown headings.
+            self.__fileOptions = tk.Menu(self.__menuBar, tearoff=0)
+            self.__editOptions = tk.Menu(self.__menuBar, tearoff=0)
+            self.__helpOptions = tk.Menu(self.__menuBar, tearoff=0)
+
+            # Add the heading labels and options menu to the menu headings.
+            self.__menuBar.add_cascade(label="File", menu=self.__fileOptions)
+            self.__menuBar.add_cascade(label="Edit", menu=self.__editOptions)
+            self.__menuBar.add_cascade(label="Help", menu=self.__helpOptions)
+
+            # Add the menu bar to the window.
+            self.__root.config(menu=self.__menuBar)
 
         # Set of options regarding the file.
-        self.__fileOptions = tk.Menu(self.__fileMenu , tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
         self.__fileOptions.add_command(label="Open File", command=self.__loadFile, accelerator="Command-O" if styles.mac else "Ctrl+O")
         self.__fileOptions.add_command(label="Save", command=self.__saveFile, accelerator="Command-S" if styles.mac else "Ctrl+S")
         self.__fileOptions.add_command(label="Exit", command=self.__exitProcess, accelerator="Command-W" if styles.mac else "Ctrl+W")
 
-        # Configure the file menu so that the file options show.
-        self.__fileMenu.config(menu=self.__fileOptions)
-
-        # Create the dropdown heading for the edit options.
-        self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground,  )
-        self.__editMenu.grid(row=0, column=1, padx=5)
-
         # Set of options regarding text operations.
-        self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
         self.__editOptions.add_command(label="Copy", command=self.__copySelected, accelerator="Command-C" if styles.mac else "Ctrl+C")
         self.__editOptions.add_command(label="Paste", command=self.__pasteSelected, accelerator="Command-V" if styles.mac else "Ctrl+V")
         self.__editOptions.add_command(label="Undo", command=self.__undo, accelerator="Command-Z" if styles.mac else "Ctrl+Z")
         self.__editOptions.add_command(label="Redo", command=self.__redo, accelerator="Command-Shift+Z" if styles.mac else "Ctrl+Shift+Z")
         self.__editOptions.add_command(label="Start Fresh", command=self.__emptyFile)
 
-        # Configure the edit menu so that the edit options show.
-        self.__editMenu.config(menu=self.__editOptions)
-
-        # Create the dropdown heading for the help options.
-        self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
-        self.__helpMenu.grid(row=0, column=2, padx=5)
-
         # Set of options regarding app help.
-        self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
         self.__helpOptions.add_command(label="About Notepad", command=self.__displayAbout)
-
-        # Configure the help menu so that the help options show.
-        self.__helpMenu.config(menu=self.__helpOptions)
 
         # Extra window configs and key bindings.
         self.__root.bind("<Control-o>", func=self.__loadFile)
