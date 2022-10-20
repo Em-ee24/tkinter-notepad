@@ -107,7 +107,7 @@ class Notepad:
         self.__root.bind("<BackSpace>", func=self.__addUndoStep)
 
         # Create the area where the text is typed.
-        self.__textArea = tk.Text(self.__root, font=(styles.font, 11), borderwidth=0, background=styles.background, foreground=styles.foreground, insertbackground=styles.foreground)
+        self.__textArea = tk.Text(self.__root, font=(styles.font, 11), borderwidth=0, background=styles.background, foreground=styles.foreground, insertbackground=styles.foreground, highlightthickness=0)
         self.__textArea.grid(row=1, column=0, sticky='news')
         self.__textArea.focus()
 
