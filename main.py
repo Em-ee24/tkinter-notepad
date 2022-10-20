@@ -41,31 +41,19 @@ class Notepad:
             # Create the dropdown heading for the file options.
             self.__fileMenu = tk.Menubutton(self.__menuFrame, text="File", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
             self.__fileMenu.grid(row=0, column=0, padx=5)
-
-            # Set of options regarding the file.
             self.__fileOptions = tk.Menu(self.__fileMenu , tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
-
-            # Configure the file menu so that the file options show.
             self.__fileMenu.config(menu=self.__fileOptions)
 
             # Create the dropdown heading for the edit options.
             self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground,  )
             self.__editMenu.grid(row=0, column=1, padx=5)
-
-            # Set of options regarding text operations.
             self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
-
-            # Configure the edit menu so that the edit options show.
             self.__editMenu.config(menu=self.__editOptions)
 
             # Create the dropdown heading for the help options.
             self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
             self.__helpMenu.grid(row=0, column=2, padx=5)
-
-            # Set of options regarding app help.
             self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
-
-            # Configure the help menu so that the help options show.
             self.__helpMenu.config(menu=self.__helpOptions)
 
         else:
