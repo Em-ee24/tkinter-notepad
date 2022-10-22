@@ -114,7 +114,6 @@ class Notepad:
         # Create thes crollbar for the text area so that overflowing text can be shown.
         self.__textScrollBar = tk.Scrollbar(self.__textArea)
         self.__textScrollBar.config(command=self.__textArea.yview)
-        self.__textScrollBar.pack(side="right", fill="y")
         self.__textArea.config(yscrollcommand=self.__textScrollBar.set)
 
     # Can be used to create or clear the undo/redo stacks.
