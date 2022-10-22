@@ -50,11 +50,11 @@ class Notepad:
             self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__editMenu.config(menu=self.__editOptions)
 
-            # Create the dropdown heading for the format options.
-            self.__formatMenu = tk.Menubutton(self.__menuFrame, text="Format", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
-            self.__formatMenu.grid(row=0, column=2, padx=5, pady=2)
-            self.__formatOptions = tk.Menu(self.__formatMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
-            self.__formatMenu.config(menu=self.__formatOptions)
+            # Create the dropdown heading for the view options.
+            self.__viewMenu = tk.Menubutton(self.__menuFrame, text="View", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+            self.__viewMenu.grid(row=0, column=2, padx=5, pady=2)
+            self.__viewOptions = tk.Menu(self.__viewMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
+            self.__viewMenu.config(menu=self.__viewOptions)
 
             # Create the dropdown heading for the help options.
             self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
@@ -69,13 +69,13 @@ class Notepad:
             # Create the three menu dropdown headings.
             self.__fileOptions = tk.Menu(self.__menuBar, tearoff=0)
             self.__editOptions = tk.Menu(self.__menuBar, tearoff=0)
-            self.__formatOptions = tk.Menu(self.__menuBar, tearoff=0)
+            self.__viewOptions = tk.Menu(self.__menuBar, tearoff=0)
             self.__helpOptions = tk.Menu(self.__menuBar, tearoff=0)
 
             # Add the heading labels and options menu to the menu headings.
             self.__menuBar.add_cascade(label="File", menu=self.__fileOptions)
             self.__menuBar.add_cascade(label="Edit", menu=self.__editOptions)
-            self.__menuBar.add_cascade(label="Format", menu=self.__formatOptions)
+            self.__menuBar.add_cascade(label="View", menu=self.__viewOptions)
             self.__menuBar.add_cascade(label="Help", menu=self.__helpOptions)
 
             # Add the menu bar to the window.
@@ -95,11 +95,12 @@ class Notepad:
         self.__editOptions.add_command(label="Redo", command=self.__redo, accelerator="Command-Shift+Z" if styles.mac else "Ctrl+Shift+Z")
         self.__editOptions.add_command(label="Start Fresh", command=self.__emptyFile)
 
-        # Set of options regarding text format.
-        self.__zoomOptions = tk.Menu(self.__formatOptions, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
-        self.__zoomOptions.add_command(label="Zoom In")
-        self.__zoomOptions.add_command(label="Zoom Out")
-        self.__formatOptions.add_cascade(label="Zoom", menu=self.__zoomOptions)
+        # Set of options regarding text view.
+        self.__zoomOptions = tk.Menu(self.__viewOptions, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+        self.__zoomOptions.add_command(label="Zoom In", command=lambda: self.__zoomChange(1), accelerator="Command-+" if styles.mac else "Ctrl+Plus")
+        self.__zoomOptions.add_command(label="Zoom Out", command=lambda: self.__zoomChange(-1), accelerator="Command--" if styles.mac else "Ctrl+Minus")
+        self.__zoomOptions.add_command(label="Original Zoom", command=self.__originalZoom)
+        self.__viewOptions.add_cascade(label="Zoom", menu=self.__zoomOptions)
 
         # Set of options regarding app help.
         self.__helpOptions.add_command(label="About Notepad", command=self.__displayAbout)
@@ -121,13 +122,17 @@ class Notepad:
         self.__root.bind("<Command-z>", func=self.__undo)
         self.__root.bind("<Control-Z>", func=self.__redo)
         self.__root.bind("<Command-Z>", func=self.__redo)
+        self.__root.bind("<Control-=>", func=lambda event: self.__zoomChange(1))
+        self.__root.bind("<Command-=>", func=lambda event: self.__zoomChange(1))
+        self.__root.bind("<Control-minus>", func=lambda event: self.__zoomChange(-1))
+        self.__root.bind("<Command-minus>", func=lambda event: self.__zoomChange(-1))
         self.__root.bind("<KeyPress>", func=self.__updateCursorPositionDisplay)
         self.__root.bind("<space>", func=self.__addUndoStep)
         self.__root.bind("<Return>", func=self.__addUndoStep)
         self.__root.bind("<BackSpace>", func=self.__addUndoStep)
 
         # Create the area where the text is typed.
-        self.__textArea = tk.Text(self.__root, font=(styles.font, 11), borderwidth=0, background=styles.background, foreground=styles.foreground, insertbackground=styles.foreground, highlightthickness=0)
+        self.__textArea = tk.Text(self.__root, font=(styles.font, styles.font_size), borderwidth=0, background=styles.background, foreground=styles.foreground, insertbackground=styles.foreground, highlightthickness=0)
         self.__textArea.grid(row=1, column=0, sticky='news')
         self.__textArea.focus()
 
@@ -143,10 +148,30 @@ class Notepad:
         self.__cursorPositionDisplay.grid(row=0, column=0, padx=5, pady=2)
         self.__updateCursorPositionDisplay()
 
+        self.__infoFrameSeparator = tk.Label(self.__infoFrame, text="|", background=styles.menu_background, foreground=styles.foreground)
+        self.__infoFrameSeparator.grid(row=0, column=1, padx=10, pady=2)
+
+        self.__fontSizeDisplay = tk.Label(self.__infoFrame, background=styles.menu_background, foreground=styles.foreground)
+        self.__fontSizeDisplay.grid(row=0, column=2, padx=5, pady=2)
+        self.__updateFontSizeDisplay()
+
+    # Updates the label that states the line number and column that the cursor is on.
     def __updateCursorPositionDisplay(self, event=None):
         line, column = self.__textArea.index("insert").split(".")
         self.__cursorPositionDisplay.config(text="Ln " + str(line) + ", Col " + str(column))
         self.__setSaved(False)
+        return
+
+    # Updates the displayed font size.
+    def __updateFontSizeDisplay(self, event=None):
+        self.__fontSizeDisplay.config(text="Font Size: " + str(styles.font_size))
+        return
+
+    # Returns the font size to the original
+    def __originalZoom(self):
+        styles.font_size = styles.original_font_size
+        self.__zoomChange(0)
+        self.__updateFontSizeDisplay()
         return
 
     # Can be used to create or clear the undo/redo stacks.
@@ -329,6 +354,13 @@ class Notepad:
         
         return
 
+    def __zoomChange(self, change_by, event=None):
+        if not (styles.font_size + change_by >= styles.max_size or styles.font_size + change_by <= styles.min_size):
+            styles.font_size += change_by
+        self.__textArea.config(font=(styles.font, styles.font_size))
+        self.__updateFontSizeDisplay()
+        return
+
     # Displays information about the app.
     def __displayAbout(self):
 
@@ -340,6 +372,7 @@ class Notepad:
     # Exits the app.
     def __destroy(self):
         self.__root.destroy()
+        styles.app.destroy()
 
     # Starts the app.
     def start(self):
