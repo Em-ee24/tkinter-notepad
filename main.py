@@ -40,19 +40,19 @@ class Notepad:
 
             # Create the dropdown heading for the file options.
             self.__fileMenu = tk.Menubutton(self.__menuFrame, text="File", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
-            self.__fileMenu.grid(row=0, column=0, padx=5)
+            self.__fileMenu.grid(row=0, column=0, padx=5, pady=2)
             self.__fileOptions = tk.Menu(self.__fileMenu , tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__fileMenu.config(menu=self.__fileOptions)
 
             # Create the dropdown heading for the edit options.
-            self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground,  )
-            self.__editMenu.grid(row=0, column=1, padx=5)
+            self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+            self.__editMenu.grid(row=0, column=1, padx=5, pady=2)
             self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__editMenu.config(menu=self.__editOptions)
 
             # Create the dropdown heading for the help options.
             self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
-            self.__helpMenu.grid(row=0, column=2, padx=5)
+            self.__helpMenu.grid(row=0, column=2, padx=5, pady=2)
             self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__helpMenu.config(menu=self.__helpOptions)
 
@@ -79,6 +79,7 @@ class Notepad:
         self.__fileOptions.add_command(label="Exit", command=self.__exitProcess, accelerator="Command-W" if styles.mac else "Ctrl+W")
 
         # Set of options regarding text operations.
+        self.__editOptions.add_command(label="Select All", command=self.__selectAll, accelerator="Command-A" if styles.mac else "Ctrl+A")
         self.__editOptions.add_command(label="Copy", command=self.__copySelected, accelerator="Command-C" if styles.mac else "Ctrl+C")
         self.__editOptions.add_command(label="Paste", command=self.__pasteSelected, accelerator="Command-V" if styles.mac else "Ctrl+V")
         self.__editOptions.add_command(label="Undo", command=self.__undo, accelerator="Command-Z" if styles.mac else "Ctrl+Z")
@@ -95,13 +96,15 @@ class Notepad:
         self.__root.bind("<Command-w>", func=self.__exitProcess)
         self.__root.bind("<Control-s>", func=self.__saveFile)
         self.__root.bind("<Command-s>", func=self.__saveFile)
+        self.__root.bind("<Control-a>", func=self.__selectAll)
+        self.__root.bind("<Command-a>", func=self.__selectAll)
         self.__root.bind("<Control-c>", func=self.__copySelected)
         self.__root.bind("<Command-c>", func=self.__copySelected)
         self.__root.bind("<Control-z>", func=self.__undo)
         self.__root.bind("<Command-z>", func=self.__undo)
         self.__root.bind("<Control-Z>", func=self.__redo)
         self.__root.bind("<Command-Z>", func=self.__redo)
-        self.__root.bind("<KeyPress>", func=lambda event: self.__setSaved(saved=False))
+        self.__root.bind("<KeyPress>", func=self.__updateCursorPositionDisplay)
         self.__root.bind("<space>", func=self.__addUndoStep)
         self.__root.bind("<Return>", func=self.__addUndoStep)
         self.__root.bind("<BackSpace>", func=self.__addUndoStep)
@@ -115,6 +118,19 @@ class Notepad:
         self.__textScrollBar = tk.Scrollbar(self.__textArea)
         self.__textScrollBar.config(command=self.__textArea.yview)
         self.__textArea.config(yscrollcommand=self.__textScrollBar.set)
+
+        self.__infoFrame = tk.Frame(self.__root, background=styles.menu_background)
+        self.__infoFrame.grid(row=2, column=0, sticky='news')
+
+        self.__cursorPositionDisplay = tk.Label(self.__infoFrame, background=styles.menu_background, foreground=styles.foreground)
+        self.__cursorPositionDisplay.grid(row=0, column=0, padx=5, pady=2)
+        self.__updateCursorPositionDisplay()
+
+    def __updateCursorPositionDisplay(self, event=None):
+        line, column = self.__textArea.index("insert").split(".")
+        self.__cursorPositionDisplay.config(text="Ln " + str(line) + ", Col " + str(column))
+        self.__setSaved(False)
+        return
 
     # Can be used to create or clear the undo/redo stacks.
     def __clearStacks(self):
@@ -216,6 +232,11 @@ class Notepad:
         
         return
 
+    # Selects all text within the text area. The returned string "break" stops default functioanlity of Ctrl+A / Cmd+A.
+    def __selectAll(self, event=None):
+        self.__textArea.tag_add("sel", "1.0", "end")
+        return "break"
+
     # Copies selected text.    
     def __copySelected(self, event=None):
         self.__copiedText = self.__textArea.selection_get()
@@ -225,21 +246,25 @@ class Notepad:
     def __pasteSelected(self):
         self.__addUndoStep()
         self.__textArea.insert('insert', self.__copiedText)
+        self.__updateCursorPositionDisplay()
         return
 
-    # Clears text within the file upon user request and clears the undo and redo stacks.
+    # Clears text within the file upon user request and clears the undo and redo stacks while updating the cursor information display.
     def __emptyFile(self):
 
         if mb.askyesno(title="Empty Notepad Warning", message="WARNING: This action is not reversible. Are you sure you want to continue?", icon="warning"):
             self.__textArea.delete('1.0', 'end')
 
         self.__clearStacks()
+        self.__updateCursorPositionDisplay()
+
         return
 
     # Adds a node to the undo stack.
     def __addUndoStep(self, event=None):
         node = self.__createNode(self.__textArea.get("1.0", "end").strip(), self.__textArea.index("insert"))
         self.__undoStack.push(node)
+        self.__updateCursorPositionDisplay()
         return
 
     # Adds a node to the redo stack.
