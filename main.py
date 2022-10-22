@@ -76,6 +76,7 @@ class Notepad:
         # Set of options regarding the file.
         self.__fileOptions.add_command(label="Open File", command=self.__loadFile, accelerator="Command-O" if styles.mac else "Ctrl+O")
         self.__fileOptions.add_command(label="Save", command=self.__saveFile, accelerator="Command-S" if styles.mac else "Ctrl+S")
+        self.__fileOptions.add_command(label="Save As", command=self.__updateSaveFileLocation, accelerator="Command-Shift-S" if styles.mac else "Ctrl+Shift+S")
         self.__fileOptions.add_command(label="Exit", command=self.__exitProcess, accelerator="Command-W" if styles.mac else "Ctrl+W")
 
         # Set of options regarding text operations.
@@ -96,6 +97,8 @@ class Notepad:
         self.__root.bind("<Command-w>", func=self.__exitProcess)
         self.__root.bind("<Control-s>", func=self.__saveFile)
         self.__root.bind("<Command-s>", func=self.__saveFile)
+        self.__root.bind("<Control-S>", func=self.__updateSaveFileLocation)
+        self.__root.bind("<Command-S>", func=self.__updateSaveFileLocation)
         self.__root.bind("<Control-a>", func=self.__selectAll)
         self.__root.bind("<Command-a>", func=self.__selectAll)
         self.__root.bind("<Control-c>", func=self.__copySelected)
@@ -177,7 +180,7 @@ class Notepad:
         return
 
     # Updates the file location.
-    def __updateSaveFileLocation(self):
+    def __updateSaveFileLocation(self, event=None):
 
         # Gets the directory of the file.
         self.__fileName = filedialog.asksaveasfilename(
