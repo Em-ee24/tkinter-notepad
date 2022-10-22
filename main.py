@@ -50,9 +50,15 @@ class Notepad:
             self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__editMenu.config(menu=self.__editOptions)
 
+            # Create the dropdown heading for the format options.
+            self.__formatMenu = tk.Menubutton(self.__menuFrame, text="Format", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+            self.__formatMenu.grid(row=0, column=2, padx=5, pady=2)
+            self.__formatOptions = tk.Menu(self.__formatMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
+            self.__formatMenu.config(menu=self.__formatOptions)
+
             # Create the dropdown heading for the help options.
             self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
-            self.__helpMenu.grid(row=0, column=2, padx=5, pady=2)
+            self.__helpMenu.grid(row=0, column=3, padx=5, pady=2)
             self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__helpMenu.config(menu=self.__helpOptions)
 
@@ -63,11 +69,13 @@ class Notepad:
             # Create the three menu dropdown headings.
             self.__fileOptions = tk.Menu(self.__menuBar, tearoff=0)
             self.__editOptions = tk.Menu(self.__menuBar, tearoff=0)
+            self.__formatOptions = tk.Menu(self.__menuBar, tearoff=0)
             self.__helpOptions = tk.Menu(self.__menuBar, tearoff=0)
 
             # Add the heading labels and options menu to the menu headings.
             self.__menuBar.add_cascade(label="File", menu=self.__fileOptions)
             self.__menuBar.add_cascade(label="Edit", menu=self.__editOptions)
+            self.__menuBar.add_cascade(label="Format", menu=self.__formatOptions)
             self.__menuBar.add_cascade(label="Help", menu=self.__helpOptions)
 
             # Add the menu bar to the window.
@@ -86,6 +94,12 @@ class Notepad:
         self.__editOptions.add_command(label="Undo", command=self.__undo, accelerator="Command-Z" if styles.mac else "Ctrl+Z")
         self.__editOptions.add_command(label="Redo", command=self.__redo, accelerator="Command-Shift+Z" if styles.mac else "Ctrl+Shift+Z")
         self.__editOptions.add_command(label="Start Fresh", command=self.__emptyFile)
+
+        # Set of options regarding text format.
+        self.__zoomOptions = tk.Menu(self.__formatOptions, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+        self.__zoomOptions.add_command(label="Zoom In")
+        self.__zoomOptions.add_command(label="Zoom Out")
+        self.__formatOptions.add_cascade(label="Zoom", menu=self.__zoomOptions)
 
         # Set of options regarding app help.
         self.__helpOptions.add_command(label="About Notepad", command=self.__displayAbout)
