@@ -39,25 +39,25 @@ class Notepad:
             self.__menuFrame.grid(row=0, column=0, sticky='news')
 
             # Create the dropdown heading for the file options.
-            self.__fileMenu = tk.Menubutton(self.__menuFrame, text="File", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+            self.__fileMenu = tk.Menubutton(self.__menuFrame, text="File", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__fileMenu.grid(row=0, column=0, padx=5, pady=2)
             self.__fileOptions = tk.Menu(self.__fileMenu , tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__fileMenu.config(menu=self.__fileOptions)
 
             # Create the dropdown heading for the edit options.
-            self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+            self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__editMenu.grid(row=0, column=1, padx=5, pady=2)
             self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__editMenu.config(menu=self.__editOptions)
 
             # Create the dropdown heading for the view options.
-            self.__viewMenu = tk.Menubutton(self.__menuFrame, text="View", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+            self.__viewMenu = tk.Menubutton(self.__menuFrame, text="View", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__viewMenu.grid(row=0, column=2, padx=5, pady=2)
             self.__viewOptions = tk.Menu(self.__viewMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__viewMenu.config(menu=self.__viewOptions)
 
             # Create the dropdown heading for the help options.
-            self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+            self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__helpMenu.grid(row=0, column=3, padx=5, pady=2)
             self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
             self.__helpMenu.config(menu=self.__helpOptions)
