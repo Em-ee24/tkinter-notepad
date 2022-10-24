@@ -158,7 +158,7 @@ class Notepad:
     # Updates the label that states the line number and column that the cursor is on.
     def __updateCursorPositionDisplay(self, event=None):
         line, column = self.__textArea.index("insert").split(".")
-        self.__cursorPositionDisplay.config(text="Ln " + str(line) + ", Col " + str(column))
+        self.__cursorPositionDisplay.config(text="Ln " + str(line) + ", Col " + str(int(column) + 1))
         self.__setSaved(False)
         return
 
