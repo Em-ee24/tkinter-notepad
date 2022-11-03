@@ -1,8 +1,8 @@
-import re
 import tkinter as tk
 import tkinter.messagebox as mb
 import tkinter.filedialog as filedialog
 import styles, detect
+from modified_simpledialog import askinteger
 from stack import Stack, CustomNode
 
 class Notepad:
@@ -94,6 +94,7 @@ class Notepad:
         self.__editOptions.add_command(label="Paste", command=self.__pasteSelected, accelerator="Command-V" if styles.mac else "Ctrl+V")
         self.__editOptions.add_command(label="Undo", command=self.__undo, accelerator="Command-Z" if styles.mac else "Ctrl+Z")
         self.__editOptions.add_command(label="Redo", command=self.__redo, accelerator="Command-Shift+Z" if styles.mac else "Ctrl+Shift+Z")
+        self.__editOptions.add_command(label="Go To", command=self.__goToLine)
         self.__editOptions.add_command(label="Start Fresh", command=self.__emptyFile)
 
         # Set of options regarding text view.
@@ -234,6 +235,14 @@ class Notepad:
         if exit:
             self.__destroy()
         
+        return
+
+    def __goToLine(self, event=None):
+        line_asked = askinteger("Go To Line Number", "Enter the line you would like to go to:", bg=styles.background, fg=styles.foreground)
+        
+        if line_asked != None:
+            self.__textArea.mark_set("insert", str(line_asked) + ".0")
+
         return
 
     # Loads text file from user's computer.

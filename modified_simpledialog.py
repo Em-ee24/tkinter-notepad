@@ -98,7 +98,7 @@ class Dialog(Toplevel):
     This class is intended as a base class for custom dialogs
     '''
 
-    def __init__(self, parent, title = None, bg=""):
+    def __init__(self, parent, title = None, bg=None, fg="black"):
         '''Initialize a dialog.
 
         Arguments:
@@ -107,11 +107,14 @@ class Dialog(Toplevel):
 
             title -- the dialog title
         '''
+
+        self.style_options = {'bg': bg, 'fg': fg}
+
         master = parent
         if master is None:
             master = _get_temp_root()
 
-        Toplevel.__init__(self, master, bg=bg)
+        Toplevel.__init__(self, master, bg=self.style_options['bg'])
 
         self.withdraw() # remain invisible for now
         # If the parent is not viewable, don't
@@ -129,7 +132,7 @@ class Dialog(Toplevel):
 
         self.result = None
 
-        body = Frame(self, bg=bg)
+        body = Frame(self, bg=self.style_options['bg'])
         self.initial_focus = self.body(body)
         body.pack(padx=5, pady=5)
 
@@ -173,11 +176,11 @@ class Dialog(Toplevel):
         override if you do not want the standard buttons
         '''
 
-        box = Frame(self)
+        box = Frame(self, bg=self.style_options['bg'])
 
-        w = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE)
+        w = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE, bg=self.style_options['bg'], fg=self.style_options['fg'], activebackground=self.style_options['bg'], activeforeground=self.style_options['fg'])
         w.pack(side=LEFT, padx=5, pady=5)
-        w = Button(box, text="Cancel", width=10, command=self.cancel)
+        w = Button(box, text="Cancel", width=10, command=self.cancel, bg=self.style_options['bg'], fg=self.style_options['fg'], activebackground=self.style_options['bg'], activeforeground=self.style_options['fg'])
         w.pack(side=LEFT, padx=5, pady=5)
 
         self.bind("<Return>", self.ok)
@@ -277,7 +280,7 @@ class _QueryDialog(Dialog):
     def __init__(self, title, prompt,
                  initialvalue=None,
                  minvalue = None, maxvalue = None,
-                 parent = None, bg=""):
+                 parent = None, bg=None, fg="black"):
 
         self.prompt   = prompt
         self.minvalue = minvalue
@@ -285,7 +288,9 @@ class _QueryDialog(Dialog):
 
         self.initialvalue = initialvalue
 
-        Dialog.__init__(self, parent, title, bg=bg)
+        self.style_options = {'bg': bg, 'fg': fg}
+
+        Dialog.__init__(self, parent, title, bg=self.style_options['bg'], fg=self.style_options['fg'])
 
     def destroy(self):
         self.entry = None
@@ -293,10 +298,10 @@ class _QueryDialog(Dialog):
 
     def body(self, master):
 
-        w = Label(master, text=self.prompt, justify=LEFT)
+        w = Label(master, text=self.prompt, justify=LEFT, bg=self.style_options['bg'], fg=self.style_options['fg'])
         w.grid(row=0, padx=5, sticky=W)
 
-        self.entry = Entry(master, name="entry")
+        self.entry = Entry(master, name="entry", bg=self.style_options['bg'], fg=self.style_options['fg'], insertbackground=self.style_options['fg'])
         self.entry.grid(row=1, padx=5, sticky=W+E)
 
         if self.initialvalue is not None:
