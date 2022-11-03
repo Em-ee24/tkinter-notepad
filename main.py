@@ -133,6 +133,8 @@ class Notepad:
         self.__root.bind("<BackSpace>", func=self.__addUndoStep)
         self.__root.bind("<Control-BackSpace>", func=self.__removeWord)
         self.__root.bind("<Option-BackSpace>", func=self.__removeWord)
+        self.__root.bind("<Alt-BackSpace>", func=self.__removeLine)
+        self.__root.bind("<Command-BackSpace>", func=self.__removeLine)
 
         # Create the area where the text is typed.
         self.__textArea = tk.Text(self.__root, font=(styles.font, styles.font_size), borderwidth=0, background=styles.background, foreground=styles.foreground, insertbackground=styles.foreground, highlightthickness=0)
@@ -157,6 +159,20 @@ class Notepad:
         self.__fontSizeDisplay = tk.Label(self.__infoFrame, background=styles.menu_background, foreground=styles.foreground)
         self.__fontSizeDisplay.grid(row=0, column=2, padx=5, pady=2)
         self.__updateFontSizeDisplay()
+
+    # Removes a line of text from the text area.
+    def __removeLine(self, event=None):
+        current_position = self.__textArea.index("insert")
+        line, column = current_position.split(".")
+
+        if current_position == "1.0":
+            return
+
+        self.__addUndoStep()
+        self.__textArea.delete(str(line) + ".0", current_position)
+        self.__updateCursorPositionDisplay()
+        
+        return
 
     # Removes a set of characters between the current position of the cursor and (a space or a newline).
     def __removeWord(self, event=None):
@@ -371,6 +387,8 @@ class Notepad:
         if node != None:
             self.__textArea.insert("1.0", node.text)
             self.__textArea.mark_set("insert", node.cursorPosition)
+            self.__setSaved(False)
+            self.__updateCursorPositionDisplay()
         
         return
 
@@ -387,9 +405,12 @@ class Notepad:
             self.__textArea.delete("1.0", "end")
             self.__textArea.insert("1.0", node.text)
             self.__textArea.mark_set("insert", node.cursorPosition)
+            self.__setSaved(False)
+            self.__updateCursorPositionDisplay()
         
         return
 
+    # Changes font size.
     def __zoomChange(self, change_by, event=None):
         if not (styles.font_size + change_by >= styles.max_size or styles.font_size + change_by <= styles.min_size):
             styles.font_size += change_by
