@@ -1,3 +1,4 @@
+import re
 import tkinter as tk
 import tkinter.messagebox as mb
 import tkinter.filedialog as filedialog
@@ -130,6 +131,8 @@ class Notepad:
         self.__root.bind("<space>", func=self.__addUndoStep)
         self.__root.bind("<Return>", func=self.__addUndoStep)
         self.__root.bind("<BackSpace>", func=self.__addUndoStep)
+        self.__root.bind("<Control-BackSpace>", func=self.__removeWord)
+        self.__root.bind("<Alt-BackSpace>", func=self.__removeWord)
 
         # Create the area where the text is typed.
         self.__textArea = tk.Text(self.__root, font=(styles.font, styles.font_size), borderwidth=0, background=styles.background, foreground=styles.foreground, insertbackground=styles.foreground, highlightthickness=0)
@@ -154,6 +157,39 @@ class Notepad:
         self.__fontSizeDisplay = tk.Label(self.__infoFrame, background=styles.menu_background, foreground=styles.foreground)
         self.__fontSizeDisplay.grid(row=0, column=2, padx=5, pady=2)
         self.__updateFontSizeDisplay()
+
+    # Removes a set of characters between the current position of the cursor and (a space or a newline).
+    def __removeWord(self, event=None):
+
+        # Gets the current posiiton and makes new variables for the line and column.
+        current_position = self.__textArea.index("insert")
+        line, column = current_position.split(".")
+
+        # Returns from the procedure if the cursor is right at the start.
+        if current_position == "1.0":
+            return
+
+        # Add undo step to undo if error is made.
+        self.__addUndoStep()
+
+        done = False
+
+        # Goes back one letter every round of while loop and checks if character is a space. If the start of the line is reached, whole line is deleted.
+        while (not done):
+            new_posiiton = str(line) + "." + str(int(column) - 1)
+            character = self.__textArea.get(new_posiiton, str(line) + "." + str(column))
+
+            if int(column) == 0:
+                self.__textArea.delete(str(line) + ".0", current_position)
+                done = True
+            elif character == " ":
+                self.__textArea.delete(new_posiiton, current_position)
+                done = True
+            else:
+                column = str(int(column) - 1)
+
+        self.__updateCursorPositionDisplay()
+        return
 
     # Updates the label that states the line number and column that the cursor is on.
     def __updateCursorPositionDisplay(self, event=None):
