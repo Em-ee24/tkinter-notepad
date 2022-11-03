@@ -35,31 +35,31 @@ class Notepad:
         if detect.windows:
 
             # Creates a menu frame at the top of the app window.
-            self.__menuFrame = tk.Frame(self.__root, background=styles.menu_background)
+            self.__menuFrame = tk.Frame(self.__root, background=styles.menuBackground)
             self.__menuFrame.grid(row=0, column=0, sticky='news')
 
             # Create the dropdown heading for the file options.
-            self.__fileMenu = tk.Menubutton(self.__menuFrame, text="File", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
+            self.__fileMenu = tk.Menubutton(self.__menuFrame, text="File", background=styles.menuBackground, foreground=styles.foreground, activebackground=styles.activeMenuBackground, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__fileMenu.grid(row=0, column=0, padx=5, pady=2)
-            self.__fileOptions = tk.Menu(self.__fileMenu , tearoff=0, background=styles.menu_command_background, foreground=styles.foreground, activebackground=styles.active_menu_command_background, activeforeground=styles.foreground)
+            self.__fileOptions = tk.Menu(self.__fileMenu , tearoff=0, background=styles.menuCommandBackground, foreground=styles.foreground, activebackground=styles.activeMenuCommandBackground, activeforeground=styles.foreground)
             self.__fileMenu.config(menu=self.__fileOptions)
 
             # Create the dropdown heading for the edit options.
-            self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
+            self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menuBackground, foreground=styles.foreground, activebackground=styles.activeMenuBackground, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__editMenu.grid(row=0, column=1, padx=5, pady=2)
-            self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_command_background, foreground=styles.foreground, activebackground=styles.active_menu_command_background, activeforeground=styles.foreground)
+            self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menuCommandBackground, foreground=styles.foreground, activebackground=styles.activeMenuCommandBackground, activeforeground=styles.foreground)
             self.__editMenu.config(menu=self.__editOptions)
 
             # Create the dropdown heading for the view options.
-            self.__viewMenu = tk.Menubutton(self.__menuFrame, text="View", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
+            self.__viewMenu = tk.Menubutton(self.__menuFrame, text="View", background=styles.menuBackground, foreground=styles.foreground, activebackground=styles.activeMenuBackground, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__viewMenu.grid(row=0, column=2, padx=5, pady=2)
-            self.__viewOptions = tk.Menu(self.__viewMenu, tearoff=0, background=styles.menu_command_background, foreground=styles.foreground, activebackground=styles.active_menu_command_background, activeforeground=styles.foreground)
+            self.__viewOptions = tk.Menu(self.__viewMenu, tearoff=0, background=styles.menuCommandBackground, foreground=styles.foreground, activebackground=styles.activeMenuCommandBackground, activeforeground=styles.foreground)
             self.__viewMenu.config(menu=self.__viewOptions)
 
             # Create the dropdown heading for the help options.
-            self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
+            self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menuBackground, foreground=styles.foreground, activebackground=styles.activeMenuBackground, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__helpMenu.grid(row=0, column=3, padx=5, pady=2)
-            self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menu_command_background, foreground=styles.foreground, activebackground=styles.active_menu_command_background, activeforeground=styles.foreground)
+            self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menuCommandBackground, foreground=styles.foreground, activebackground=styles.activeMenuCommandBackground, activeforeground=styles.foreground)
             self.__helpMenu.config(menu=self.__helpOptions)
 
         else:
@@ -102,7 +102,7 @@ class Notepad:
         self.__editOptions.add_command(label="Start Fresh", command=self.__emptyFile)
 
         # Set of options regarding text view.
-        self.__zoomOptions = tk.Menu(self.__viewOptions, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor)
+        self.__zoomOptions = tk.Menu(self.__viewOptions, tearoff=0, background=styles.menuCommandBackground, foreground=styles.foreground, activebackground=styles.activeMenuCommandBackground, activeforeground=styles.foreground, cursor=styles.cursor)
         self.__zoomOptions.add_command(label="Zoom In", command=lambda: self.__zoomChange(1), accelerator="Command-+" if styles.mac else "Ctrl+Plus")
         self.__zoomOptions.add_command(label="Zoom Out", command=lambda: self.__zoomChange(-1), accelerator="Command--" if styles.mac else "Ctrl+Minus")
         self.__zoomOptions.add_command(label="Original Zoom", command=self.__originalZoom)
@@ -144,7 +144,7 @@ class Notepad:
         self.__root.bind("<Command-BackSpace>", func=self.__removeLine)
 
         # Create the area where the text is typed.
-        self.__textArea = tk.Text(self.__root, font=(styles.font, styles.font_size), borderwidth=0, background=styles.background, foreground=styles.foreground, insertbackground=styles.foreground, highlightthickness=0)
+        self.__textArea = tk.Text(self.__root, font=(styles.font, styles.fontSize), borderwidth=0, background=styles.background, foreground=styles.foreground, insertbackground=styles.foreground, highlightthickness=0)
         self.__textArea.grid(row=1, column=0, sticky='news')
         self.__textArea.focus()
 
@@ -153,17 +153,17 @@ class Notepad:
         self.__textScrollBar.config(command=self.__textArea.yview)
         self.__textArea.config(yscrollcommand=self.__textScrollBar.set)
 
-        self.__infoFrame = tk.Frame(self.__root, background=styles.menu_background)
+        self.__infoFrame = tk.Frame(self.__root, background=styles.menuBackground)
         self.__infoFrame.grid(row=2, column=0, sticky='news')
 
-        self.__cursorPositionDisplay = tk.Label(self.__infoFrame, background=styles.menu_background, foreground=styles.foreground)
+        self.__cursorPositionDisplay = tk.Label(self.__infoFrame, background=styles.menuBackground, foreground=styles.foreground)
         self.__cursorPositionDisplay.grid(row=0, column=0, padx=5, pady=2)
         self.__updateCursorPositionDisplay()
 
-        self.__infoFrameSeparator = tk.Label(self.__infoFrame, text="|", background=styles.menu_background, foreground=styles.foreground)
+        self.__infoFrameSeparator = tk.Label(self.__infoFrame, text="|", background=styles.menuBackground, foreground=styles.foreground)
         self.__infoFrameSeparator.grid(row=0, column=1, padx=10, pady=2)
 
-        self.__fontSizeDisplay = tk.Label(self.__infoFrame, background=styles.menu_background, foreground=styles.foreground)
+        self.__fontSizeDisplay = tk.Label(self.__infoFrame, background=styles.menuBackground, foreground=styles.foreground)
         self.__fontSizeDisplay.grid(row=0, column=2, padx=5, pady=2)
         self.__updateFontSizeDisplay()
 
@@ -245,11 +245,11 @@ class Notepad:
 
     # Moves the cursor to the specified line number.
     def __goToLine(self, event=None):
-        number_of_lines = int(self.__textArea.index("end").split(".")[0]) - 1
-        line_asked = askinteger("Go To Line Number", "Enter the line you would like to go to:", bg=styles.background, fg=styles.foreground, minvalue=1, maxvalue=number_of_lines)
+        numberOfLines = int(self.__textArea.index("end").split(".")[0]) - 1
+        lineAsked = askinteger("Go To Line Number", "Enter the line you would like to go to:", bg=styles.background, fg=styles.foreground, minvalue=1, maxvalue=numberOfLines)
 
-        if number_of_lines != None:
-            self.__textArea.mark_set("insert", str(line_asked) + ".0")
+        if numberOfLines != None:
+            self.__textArea.mark_set("insert", str(lineAsked) + ".0")
 
         return
 
@@ -283,7 +283,7 @@ class Notepad:
 
     # Returns the font size to the original
     def __originalZoom(self):
-        styles.font_size = styles.original_font_size
+        styles.fontSize = styles.original_fontSize
         self.__zoomChange(0)
         self.__updateFontSizeDisplay()
         return
@@ -315,14 +315,14 @@ class Notepad:
 
     # Removes a line of text from the text area.
     def __removeLine(self, event=None):
-        current_position = self.__textArea.index("insert")
-        line, column = current_position.split(".")
+        currentPosition = self.__textArea.index("insert")
+        line, column = currentPosition.split(".")
 
-        if current_position == "1.0":
+        if currentPosition == "1.0":
             return
 
         self.__addUndoStep()
-        self.__textArea.delete(str(line) + ".0", current_position)
+        self.__textArea.delete(str(line) + ".0", currentPosition)
         self.__updateCursorPositionDisplay()
         
         return
@@ -331,11 +331,11 @@ class Notepad:
     def __removeWord(self, event=None):
 
         # Gets the current posiiton and makes new variables for the line and column.
-        current_position = self.__textArea.index("insert")
-        line, column = current_position.split(".")
+        currentPosition = self.__textArea.index("insert")
+        line, column = currentPosition.split(".")
 
         # Returns from the procedure if the cursor is right at the start.
-        if current_position == "1.0":
+        if currentPosition == "1.0":
             return
 
         # Add undo step to undo if error is made.
@@ -345,14 +345,14 @@ class Notepad:
 
         # Goes back one letter every round of while loop and checks if character is a space. If the start of the line is reached, whole line is deleted.
         while (not done):
-            new_posiiton = str(line) + "." + str(int(column) - 1)
-            character = self.__textArea.get(new_posiiton, str(line) + "." + str(column))
+            newPosition = str(line) + "." + str(int(column) - 1)
+            character = self.__textArea.get(newPosition, str(line) + "." + str(column))
 
             if int(column) == 0:
-                self.__textArea.delete(str(line) + ".0", current_position)
+                self.__textArea.delete(str(line) + ".0", currentPosition)
                 done = True
             elif character == " ":
-                self.__textArea.delete(new_posiiton, current_position)
+                self.__textArea.delete(newPosition, currentPosition)
                 done = True
             else:
                 column = str(int(column) - 1)
@@ -413,7 +413,7 @@ class Notepad:
 
     # Updates the displayed font size.
     def __updateFontSizeDisplay(self, event=None):
-        self.__fontSizeDisplay.config(text="Font Size: " + str(styles.font_size))
+        self.__fontSizeDisplay.config(text="Font Size: " + str(styles.fontSize))
         return
 
     # Updates the file location.
@@ -440,14 +440,14 @@ class Notepad:
         return
 
     # Changes font size.
-    def __zoomChange(self, change_by, event=None):
-        bigger_than_max = styles.font_size + change_by >= styles.max_size
-        smaller_than_min = styles.font_size + change_by <= styles.min_size
+    def __zoomChange(self, changeBy, event=None):
+        biggerThanMax = styles.fontSize + changeBy >= styles.maxSize
+        smallerThanMin = styles.fontSize + changeBy <= styles.minSize
 
-        if not (bigger_than_max or smaller_than_min):
-            styles.font_size += change_by
+        if not (biggerThanMax or smallerThanMin):
+            styles.fontSize += changeBy
         
-        self.__textArea.config(font=(styles.font, styles.font_size))
+        self.__textArea.config(font=(styles.font, styles.fontSize))
         self.__updateFontSizeDisplay()
         return
 
