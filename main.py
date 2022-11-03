@@ -107,6 +107,7 @@ class Notepad:
         self.__zoomOptions.add_command(label="Zoom Out", command=lambda: self.__zoomChange(-1), accelerator="Command--" if styles.mac else "Ctrl+Minus")
         self.__zoomOptions.add_command(label="Original Zoom", command=self.__originalZoom)
         self.__viewOptions.add_cascade(label="Zoom", menu=self.__zoomOptions)
+        self.__viewOptions.add_command(label="Hide Status Bar", command=self.__toggleStatusBar)
 
         # Set of options regarding app help.
         self.__helpOptions.add_command(label="About Notepad", command=self.__displayAbout)
@@ -155,6 +156,8 @@ class Notepad:
 
         self.__infoFrame = tk.Frame(self.__root, background=styles.menuBackground)
         self.__infoFrame.grid(row=2, column=0, sticky='news')
+
+        self.__infoFrameShown = True
 
         self.__cursorPositionDisplay = tk.Label(self.__infoFrame, background=styles.menuBackground, foreground=styles.foreground)
         self.__cursorPositionDisplay.grid(row=0, column=0, padx=5, pady=2)
@@ -385,6 +388,22 @@ class Notepad:
     # Changes the "saved" attribute used when exiting the program.
     def __setSaved(self, saved, event=None):
         self.__saved = saved
+        return
+
+    # Toggles the view of the status bar at the bottom.
+    def __toggleStatusBar(self, event=None):
+
+        if self.__infoFrameShown:
+            self.__infoFrameShown = False
+            self.__infoFrame.grid_remove()
+            self.__viewOptions.delete(1, 1)
+            self.__viewOptions.add_command(label="Show Status Bar", command=self.__toggleStatusBar)
+        else:
+            self.__infoFrameShown = True
+            self.__infoFrame.grid()
+            self.__viewOptions.delete(1, 1)
+            self.__viewOptions.add_command(label="Hide Status Bar", command=self.__toggleStatusBar)
+
         return
 
     # Adds text to the redo stack and then undoes all characters up to one space. Done by replacing all the text within the file.
