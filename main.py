@@ -132,7 +132,7 @@ class Notepad:
         self.__root.bind("<Return>", func=self.__addUndoStep)
         self.__root.bind("<BackSpace>", func=self.__addUndoStep)
         self.__root.bind("<Control-BackSpace>", func=self.__removeWord)
-        self.__root.bind("<Alt-BackSpace>", func=self.__removeWord)
+        self.__root.bind("<Option-BackSpace>", func=self.__removeWord)
 
         # Create the area where the text is typed.
         self.__textArea = tk.Text(self.__root, font=(styles.font, styles.font_size), borderwidth=0, background=styles.background, foreground=styles.foreground, insertbackground=styles.foreground, highlightthickness=0)
