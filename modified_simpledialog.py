@@ -180,7 +180,7 @@ class Dialog(Toplevel):
 
         w = Button(box, text="OK", width=10, command=self.ok, default=ACTIVE, bg=self.style_options['bg'], fg=self.style_options['fg'], activebackground=self.style_options['bg'], activeforeground=self.style_options['fg'])
         w.pack(side=LEFT, padx=5, pady=5)
-        w = Button(box, text="Cancel", width=10, command=self.cancel, bg=self.style_options['bg'], fg=self.style_options['fg'], activebackground=self.style_options['bg'], activeforeground=self.style_options['fg'])
+        w = Button(box, text="Cancel", width=10, command=self.cancel, default=ACTIVE, bg=self.style_options['bg'], fg=self.style_options['fg'], activebackground=self.style_options['bg'], activeforeground=self.style_options['fg'])
         w.pack(side=LEFT, padx=5, pady=5)
 
         self.bind("<Return>", self.ok)
