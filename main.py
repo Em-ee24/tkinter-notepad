@@ -31,7 +31,6 @@ class Notepad:
         self.__root.grid_rowconfigure(1, weight=1)
         self.__root.grid_columnconfigure(0, weight=1)
         self.__root.protocol("WM_DELETE_WINDOW", self.__exitProcess)
-        self.__root.config()
 
         if detect.windows:
 
@@ -42,25 +41,25 @@ class Notepad:
             # Create the dropdown heading for the file options.
             self.__fileMenu = tk.Menubutton(self.__menuFrame, text="File", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__fileMenu.grid(row=0, column=0, padx=5, pady=2)
-            self.__fileOptions = tk.Menu(self.__fileMenu , tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
+            self.__fileOptions = tk.Menu(self.__fileMenu , tearoff=0, background=styles.menu_command_background, foreground=styles.foreground, activebackground=styles.active_menu_command_background, activeforeground=styles.foreground)
             self.__fileMenu.config(menu=self.__fileOptions)
 
             # Create the dropdown heading for the edit options.
             self.__editMenu = tk.Menubutton(self.__menuFrame, text="Edit", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__editMenu.grid(row=0, column=1, padx=5, pady=2)
-            self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
+            self.__editOptions = tk.Menu(self.__editMenu, tearoff=0, background=styles.menu_command_background, foreground=styles.foreground, activebackground=styles.active_menu_command_background, activeforeground=styles.foreground)
             self.__editMenu.config(menu=self.__editOptions)
 
             # Create the dropdown heading for the view options.
             self.__viewMenu = tk.Menubutton(self.__menuFrame, text="View", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__viewMenu.grid(row=0, column=2, padx=5, pady=2)
-            self.__viewOptions = tk.Menu(self.__viewMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
+            self.__viewOptions = tk.Menu(self.__viewMenu, tearoff=0, background=styles.menu_command_background, foreground=styles.foreground, activebackground=styles.active_menu_command_background, activeforeground=styles.foreground)
             self.__viewMenu.config(menu=self.__viewOptions)
 
             # Create the dropdown heading for the help options.
             self.__helpMenu = tk.Menubutton(self.__menuFrame, text="Help", background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground, cursor=styles.cursor, borderwidth=0)
             self.__helpMenu.grid(row=0, column=3, padx=5, pady=2)
-            self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menu_background, foreground=styles.foreground, activebackground=styles.active_menu_background, activeforeground=styles.foreground)
+            self.__helpOptions = tk.Menu(self.__helpMenu, tearoff=0, background=styles.menu_command_background, foreground=styles.foreground, activebackground=styles.active_menu_command_background, activeforeground=styles.foreground)
             self.__helpMenu.config(menu=self.__helpOptions)
 
         else:
@@ -84,17 +83,22 @@ class Notepad:
 
         # Set of options regarding the file.
         self.__fileOptions.add_command(label="Open File", command=self.__loadFile, accelerator="Command-O" if styles.mac else "Ctrl+O")
+        self.__fileOptions.add_separator()
         self.__fileOptions.add_command(label="Save", command=self.__saveFile, accelerator="Command-S" if styles.mac else "Ctrl+S")
         self.__fileOptions.add_command(label="Save As", command=self.__updateSaveFileLocation, accelerator="Command-Shift-S" if styles.mac else "Ctrl+Shift+S")
+        self.__fileOptions.add_separator()
         self.__fileOptions.add_command(label="Exit", command=self.__exitProcess, accelerator="Command-W" if styles.mac else "Ctrl+W")
 
         # Set of options regarding text operations.
-        self.__editOptions.add_command(label="Select All", command=self.__selectAll, accelerator="Command-A" if styles.mac else "Ctrl+A")
-        self.__editOptions.add_command(label="Copy", command=self.__copySelected, accelerator="Command-C" if styles.mac else "Ctrl+C")
-        self.__editOptions.add_command(label="Paste", command=self.__pasteSelected, accelerator="Command-V" if styles.mac else "Ctrl+V")
         self.__editOptions.add_command(label="Undo", command=self.__undo, accelerator="Command-Z" if styles.mac else "Ctrl+Z")
         self.__editOptions.add_command(label="Redo", command=self.__redo, accelerator="Command-Shift+Z" if styles.mac else "Ctrl+Shift+Z")
-        self.__editOptions.add_command(label="Go To", command=self.__goToLine)
+        self.__editOptions.add_separator()
+        self.__editOptions.add_command(label="Copy", command=self.__copySelected, accelerator="Command-C" if styles.mac else "Ctrl+C")
+        self.__editOptions.add_command(label="Paste", command=self.__pasteSelected, accelerator="Command-V" if styles.mac else "Ctrl+V")
+        self.__editOptions.add_separator()
+        self.__editOptions.add_command(label="Select All", command=self.__selectAll, accelerator="Command-A" if styles.mac else "Ctrl+A")
+        self.__editOptions.add_command(label="Go To", command=self.__goToLine, accelerator="Command-G" if styles.mac else "Ctrl+G")
+        self.__editOptions.add_separator()
         self.__editOptions.add_command(label="Start Fresh", command=self.__emptyFile)
 
         # Set of options regarding text view.
@@ -124,6 +128,8 @@ class Notepad:
         self.__root.bind("<Command-z>", func=self.__undo)
         self.__root.bind("<Control-Z>", func=self.__redo)
         self.__root.bind("<Command-Z>", func=self.__redo)
+        self.__root.bind("<Control-g>", func=self.__goToLine)
+        self.__root.bind("<Command-g>", func=self.__goToLine)
         self.__root.bind("<Control-=>", func=lambda event: self.__zoomChange(1))
         self.__root.bind("<Command-=>", func=lambda event: self.__zoomChange(1))
         self.__root.bind("<Control-minus>", func=lambda event: self.__zoomChange(-1))
@@ -237,10 +243,12 @@ class Notepad:
         
         return
 
+    # Moves the cursor to the specified line number.
     def __goToLine(self, event=None):
-        line_asked = askinteger("Go To Line Number", "Enter the line you would like to go to:", bg=styles.background, fg=styles.foreground)
-        
-        if line_asked != None:
+        number_of_lines = int(self.__textArea.index("end").split(".")[0]) - 1
+        line_asked = askinteger("Go To Line Number", "Enter the line you would like to go to:", bg=styles.background, fg=styles.foreground, minvalue=1, maxvalue=number_of_lines)
+
+        if number_of_lines != None:
             self.__textArea.mark_set("insert", str(line_asked) + ".0")
 
         return
