@@ -4,7 +4,7 @@
 
 ## What this project is about:
 
-This is a small project which is meant for editing text files. This was made as a fun project.
+This is a small project which is meant for editing text files.
 
 ## Requirements:
 
@@ -14,11 +14,9 @@ This is a small project which is meant for editing text files. This was made as 
 
 The requirements from pip so far are listed in the <i>requirements.txt</i> file. These may expand as the program brings more features.
 
-
-
 ## How to install:
 
-Navigate to the folder in which this program is downloaded  using a terminal.
+Navigate to the folder in which this program is downloaded using a terminal.
 Then use the command below to install the requirements.
 
 <code>
