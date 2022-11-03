@@ -160,6 +160,142 @@ class Notepad:
         self.__fontSizeDisplay.grid(row=0, column=2, padx=5, pady=2)
         self.__updateFontSizeDisplay()
 
+    # Adds a node to the redo stack.
+    def __addRedoStep(self):
+        node = self.__createNode(self.__textArea.get("1.0", "end").strip(), self.__textArea.index("insert"))
+        self.__redoStack.push(node)
+        return
+
+    # Adds a node to the undo stack.
+    def __addUndoStep(self, event=None):
+        node = self.__createNode(self.__textArea.get("1.0", "end").strip(), self.__textArea.index("insert"))
+        self.__undoStack.push(node)
+        self.__updateCursorPositionDisplay()
+        return
+
+    # Can be used to create or clear the undo/redo stacks.
+    def __clearStacks(self):
+        self.__undoStack = Stack()
+        self.__redoStack = Stack()
+        return
+
+    # Copies selected text.    
+    def __copySelected(self, event=None):
+        self.__copiedText = self.__textArea.selection_get()
+        return
+
+    # Cretes a node by storing the text and cursorPosition of the text area.
+    def __createNode(self, text, cursorPosition):
+        node = CustomNode()
+        node.text = text
+        node.cursorPosition = cursorPosition
+        return node
+
+    # Exits the app.
+    def __destroy(self):
+        self.__root.destroy()
+        styles.app.destroy()
+
+    # Displays information about the app.
+    def __displayAbout(self):
+
+        mb.showinfo(
+            title="About Notepad",
+            message="Version: 1.0\nAuthor: Mostafa El-Shoubaky"
+        )
+
+    # Clears text within the file upon user request and clears the undo and redo stacks while updating the cursor information display.
+    def __emptyFile(self):
+
+        if mb.askyesno(title="Empty Notepad Warning", message="WARNING: This action is not reversible. Are you sure you want to continue?", icon="warning"):
+            self.__textArea.delete('1.0', 'end')
+
+        self.__clearStacks()
+        self.__updateCursorPositionDisplay()
+
+        return
+
+    # Asks and saves the file upon user request and before closing the app.
+    # If its saved then the exit the program without asking.
+    # If it's not saved then the user is asked whether they want the file saved or not.
+    def __exitProcess(self, event=None):
+
+        exit = False
+
+        if self.__saved:
+            exit = True
+        elif mb.askyesno(title="Save File", message="Would you like to save this file?"):
+            self.__saveFile()
+            if self.__saved:
+                exit = True
+        else:
+            exit = True
+
+        if exit:
+            self.__destroy()
+        
+        return
+
+    # Loads text file from user's computer.
+    def __loadFile(self, event=None):
+
+        # Gets the directory of the file.
+        self.__fileName = filedialog.askopenfilename(
+            defaultextension='*.txt',
+            filetypes=[
+                ("Text Documents", "*.txt"),
+                ("All Files", "*.*"),
+            ]
+        )
+
+        # Check to make sure they havent cancelled file open.
+        if self.__fileName != "":
+            self.__updateTitle()
+
+            file = open(self.__fileName, "r")
+            contents = file.read()
+            file.close()
+
+            self.__textArea.insert("1.0", contents)
+            self.__setSaved(True)
+            self.__clearStacks()
+        else:
+            mb.showerror(title="Open Error", message="Failed to open file. Please try again.")
+
+        return
+
+    # Returns the font size to the original
+    def __originalZoom(self):
+        styles.font_size = styles.original_font_size
+        self.__zoomChange(0)
+        self.__updateFontSizeDisplay()
+        return
+
+    # Pastes copied text.
+    def __pasteSelected(self):
+        self.__addUndoStep()
+        self.__textArea.insert('insert', self.__copiedText)
+        self.__updateCursorPositionDisplay()
+        return
+
+    # Adds the text that was undone from the __undo method. 
+    def __redo(self, event=None):
+
+        # Save text area state if user wants to undo after redo.
+        self.__addUndoStep()
+
+        # Gets last saved state from redoStack.
+        node = self.__redoStack.pop()
+
+        if node != None:
+            self.__textArea.delete("1.0", "end")
+            self.__textArea.insert("1.0", node.text)
+            self.__textArea.mark_set("insert", node.cursorPosition)
+            self.__setSaved(False)
+            self.__updateCursorPositionDisplay()
+        
+        return
+
     # Removes a line of text from the text area.
     def __removeLine(self, event=None):
         current_position = self.__textArea.index("insert")
@@ -207,87 +343,6 @@ class Notepad:
         self.__updateCursorPositionDisplay()
         return
 
-    # Updates the label that states the line number and column that the cursor is on.
-    def __updateCursorPositionDisplay(self, event=None):
-        line, column = self.__textArea.index("insert").split(".")
-        self.__cursorPositionDisplay.config(text="Ln " + str(line) + ", Col " + str(int(column) + 1))
-        self.__setSaved(False)
-        return
-
-    # Updates the displayed font size.
-    def __updateFontSizeDisplay(self, event=None):
-        self.__fontSizeDisplay.config(text="Font Size: " + str(styles.font_size))
-        return
-
-    # Returns the font size to the original
-    def __originalZoom(self):
-        styles.font_size = styles.original_font_size
-        self.__zoomChange(0)
-        self.__updateFontSizeDisplay()
-        return
-
-    # Can be used to create or clear the undo/redo stacks.
-    def __clearStacks(self):
-        self.__undoStack = Stack()
-        self.__redoStack = Stack()
-        return
-
-    # Changes the "saved" attribute used when exiting the program.
-    def __setSaved(self, saved, event=None):
-        self.__saved = saved
-        return
-
-    # Updates window title to the directory of the file.
-    def __updateTitle(self):
-        self.__root.title(str(self.__fileName)) if self.__fileName != "" else None
-        return
-
-    # Loads text file from user's computer.
-    def __loadFile(self, event=None):
-
-        # Gets the directory of the file.
-        self.__fileName = filedialog.askopenfilename(
-            defaultextension='*.txt',
-            filetypes=[
-                ("Text Documents", "*.txt"),
-                ("All Files", "*.*"),
-            ]
-        )
-
-        # Check to make sure they havent cancelled file open.
-        if self.__fileName != "":
-            self.__updateTitle()
-
-            file = open(self.__fileName, "r")
-            contents = file.read()
-            file.close()
-
-            self.__textArea.insert("1.0", contents)
-            self.__setSaved(True)
-            self.__clearStacks()
-        else:
-            mb.showerror(title="Open Error", message="Failed to open file. Please try again.")
-
-        return
-
-    # Updates the file location.
-    def __updateSaveFileLocation(self, event=None):
-
-        # Gets the directory of the file.
-        self.__fileName = filedialog.asksaveasfilename(
-            initialfile="Untitled.txt",
-            defaultextension=".txt",
-            filetypes=[
-                ("Text Documents", "*.txt"),
-                ("All Files", "*.*"),
-            ]
-        )
-
-        # Check to make sure they havent cancelled file save.
-        if self.__fileName != "":
-            self.__updateTitle()
-        return
-
     # Checks to see where to save the file before saving. If empty (user cancelled saving) then the program will display a message withot saving.
     def __saveFile(self, event=None):
 
@@ -305,74 +360,15 @@ class Notepad:
 
         return
 
-    # Asks and saves the file upon user request and before closing the app.
-    # If its saved then the exit the program without asking.
-    # If it's not saved then the user is asked whether they want the file saved or not.
-    def __exitProcess(self, event=None):
-
-        exit = False
-
-        if self.__saved:
-            exit = True
-        elif mb.askyesno(title="Save File", message="Would you like to save this file?"):
-            self.__saveFile()
-            if self.__saved:
-                exit = True
-        else:
-            exit = True
-
-        if exit:
-            self.__destroy()
-        
-        return
-
     # Selects all text within the text area. The returned string "break" stops default functioanlity of Ctrl+A / Cmd+A.
     def __selectAll(self, event=None):
         self.__textArea.tag_add("sel", "1.0", "end")
-        return "break"
-
-    # Copies selected text.    
-    def __copySelected(self, event=None):
-        self.__copiedText = self.__textArea.selection_get()
         return
 
-    # Pastes copied text.
-    def __pasteSelected(self):
-        self.__addUndoStep()
-        self.__textArea.insert('insert', self.__copiedText)
-        self.__updateCursorPositionDisplay()
+    # Changes the "saved" attribute used when exiting the program.
+    def __setSaved(self, saved, event=None):
+        self.__saved = saved
         return
-
-    # Clears text within the file upon user request and clears the undo and redo stacks while updating the cursor information display.
-    def __emptyFile(self):
-
-        if mb.askyesno(title="Empty Notepad Warning", message="WARNING: This action is not reversible. Are you sure you want to continue?", icon="warning"):
-            self.__textArea.delete('1.0', 'end')
-
-        self.__clearStacks()
-        self.__updateCursorPositionDisplay()
-
-        return
-
-    # Adds a node to the undo stack.
-    def __addUndoStep(self, event=None):
-        node = self.__createNode(self.__textArea.get("1.0", "end").strip(), self.__textArea.index("insert"))
-        self.__undoStack.push(node)
-        self.__updateCursorPositionDisplay()
-        return
-
-    # Adds a node to the redo stack.
-    def __addRedoStep(self):
-        node = self.__createNode(self.__textArea.get("1.0", "end").strip(), self.__textArea.index("insert"))
-        self.__redoStack.push(node)
-        return
-
-    # Cretes a node by storing the text and cursorPosition of the text area.
-    def __createNode(self, text, cursorPosition):
-        node = CustomNode()
-        node.text = text
-        node.cursorPosition = cursorPosition
-        return node
 
     # Adds text to the redo stack and then undoes all characters up to one space. Done by replacing all the text within the file.
     def __undo(self, event=None):
@@ -392,44 +388,52 @@ class Notepad:
         
         return
 
-    # Adds the text that was undone from the __undo method. 
-    def __redo(self, event=None):
+    # Updates the label that states the line number and column that the cursor is on.
+    def __updateCursorPositionDisplay(self, event=None):
+        line, column = self.__textArea.index("insert").split(".")
+        self.__cursorPositionDisplay.config(text="Ln " + str(line) + ", Col " + str(int(column) + 1))
+        self.__setSaved(False)
+        return
 
-        # Save text area state if user wants to undo after redo.
-        self.__addUndoStep()
+    # Updates the displayed font size.
+    def __updateFontSizeDisplay(self, event=None):
+        self.__fontSizeDisplay.config(text="Font Size: " + str(styles.font_size))
+        return
 
-        # Gets last saved state from redoStack.
-        node = self.__redoStack.pop()
+    # Updates the file location.
+    def __updateSaveFileLocation(self, event=None):
 
-        if node != None:
-            self.__textArea.delete("1.0", "end")
-            self.__textArea.insert("1.0", node.text)
-            self.__textArea.mark_set("insert", node.cursorPosition)
-            self.__setSaved(False)
-            self.__updateCursorPositionDisplay()
-        
+        # Gets the directory of the file.
+        self.__fileName = filedialog.asksaveasfilename(
+            initialfile="Untitled.txt",
+            defaultextension=".txt",
+            filetypes=[
+                ("Text Documents", "*.txt"),
+                ("All Files", "*.*"),
+            ]
+        )
+
+        # Check to make sure they havent cancelled file save.
+        if self.__fileName != "":
+            self.__updateTitle()
+        return 
+
+    # Updates window title to the directory of the file.
+    def __updateTitle(self):
+        self.__root.title(str(self.__fileName)) if self.__fileName != "" else None
         return
 
     # Changes font size.
     def __zoomChange(self, change_by, event=None):
-        if not (styles.font_size + change_by >= styles.max_size or styles.font_size + change_by <= styles.min_size):
+        bigger_than_max = styles.font_size + change_by >= styles.max_size
+        smaller_than_min = styles.font_size + change_by <= styles.min_size
+
+        if not (bigger_than_max or smaller_than_min):
             styles.font_size += change_by
+        
         self.__textArea.config(font=(styles.font, styles.font_size))
         self.__updateFontSizeDisplay()
         return
-
-    # Displays information about the app.
-    def __displayAbout(self):
-
-        mb.showinfo(
-            title="About Notepad",
-            message="Version: 1.0\nAuthor: Mostafa El-Shoubaky"
-        )
-
-    # Exits the app.
-    def __destroy(self):
-        self.__root.destroy()
-        styles.app.destroy()
 
     # Starts the app.
     def start(self):
