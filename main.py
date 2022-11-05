@@ -84,8 +84,8 @@ class Notepad:
         # Set of options regarding the file.
         self.__fileOptions.add_command(label="Open File", command=self.__loadFile, accelerator="Command-O" if styles.mac else "Ctrl+O")
         self.__fileOptions.add_separator()
-        self.__fileOptions.add_command(label="Save", command=self.__saveFile, accelerator="Command-S" if styles.mac else "Ctrl+S")
-        self.__fileOptions.add_command(label="Save As", command=self.__updateSaveFileLocation, accelerator="Command-Shift-S" if styles.mac else "Ctrl+Shift+S")
+        self.__fileOptions.add_command(label="Save", command=lambda event="", change=False: self.__saveFile(event, change), accelerator="Command-S" if styles.mac else "Ctrl+S")
+        self.__fileOptions.add_command(label="Save As", command=lambda event="", change=True: self.__saveFile(event, change), accelerator="Command-Shift-S" if styles.mac else "Ctrl+Shift+S")
         self.__fileOptions.add_separator()
         self.__fileOptions.add_command(label="Exit", command=self.__exitProcess, accelerator="Command-W" if styles.mac else "Ctrl+W")
 
@@ -117,10 +117,10 @@ class Notepad:
         self.__root.bind("<Command-o>", func=self.__loadFile)
         self.__root.bind("<Control-w>", func=self.__exitProcess)
         self.__root.bind("<Command-w>", func=self.__exitProcess)
-        self.__root.bind("<Control-s>", func=self.__saveFile)
-        self.__root.bind("<Command-s>", func=self.__saveFile)
-        self.__root.bind("<Control-S>", func=self.__updateSaveFileLocation)
-        self.__root.bind("<Command-S>", func=self.__updateSaveFileLocation)
+        self.__root.bind("<Control-s>", func=lambda event, change=False: self.__saveFile(event, change))
+        self.__root.bind("<Command-s>", func=lambda event, change=False: self.__saveFile(event, change))
+        self.__root.bind("<Control-S>", func=lambda event, change=True: self.__saveFile(event, change))
+        self.__root.bind("<Command-S>", func=lambda event, change=True: self.__saveFile(event, change))
         self.__root.bind("<Control-a>", func=self.__selectAll)
         self.__root.bind("<Command-a>", func=self.__selectAll)
         self.__root.bind("<Control-c>", func=self.__copySelected)
@@ -364,9 +364,9 @@ class Notepad:
         return
 
     # Checks to see where to save the file before saving. If empty (user cancelled saving) then the program will display a message withot saving.
-    def __saveFile(self, event=None):
+    def __saveFile(self, event=None, change=False):
 
-        if self.__fileName == "":
+        if self.__fileName == "" or change:
             self.__updateSaveFileLocation()
 
         # Check file location again to make sure they haven't cancelled. If they have then display a message to them.
