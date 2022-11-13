@@ -286,7 +286,7 @@ class Notepad:
 
     # Returns the font size to the original
     def __originalZoom(self):
-        styles.fontSize = styles.original_fontSize
+        styles.fontSize = styles.originalFontSize
         self.__zoomChange(0)
         self.__updateFontSizeDisplay()
         return

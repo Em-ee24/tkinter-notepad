@@ -3,7 +3,7 @@ import tkinter as tk
 
 # Remove secondary window upon creation.
 app = tk.Tk()
-app.overrideredirect(1)
+app.overrideredirect(True)
 app.withdraw()
 
 # Font options.
