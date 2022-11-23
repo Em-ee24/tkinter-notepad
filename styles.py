@@ -17,7 +17,13 @@ minSize = int(tk.Frame().winfo_screenwidth() / 320)
 mac = True if detect.mac else False
 
 # Compatible cursor
-cursor = "pointinghand" if mac else "@Windows_Hand.cur"
+cursor = ""
+if detect.mac == True:
+    cursor = "pointinghand"
+elif detect.windows == True:
+    cursor = "@Windows_Hand.cur"
+else:
+    cursor = ""
 
 # Check dark
 dark = darkdetect.isDark()
