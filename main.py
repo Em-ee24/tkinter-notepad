@@ -27,7 +27,7 @@ class Notepad:
         self.__root = kwargs['window']
         self.__root.geometry(str(width) + "x" + str(height) + "+0+0")
         self.__root.title("Untitled")
-        self.__root.iconbitmap("pen.ico")
+        self.__root.iconbitmap("pen.ico") if not detect.linux else ""
         self.__root.grid_rowconfigure(1, weight=1)
         self.__root.grid_columnconfigure(0, weight=1)
         self.__root.protocol("WM_DELETE_WINDOW", self.__exitProcess)
@@ -131,8 +131,8 @@ class Notepad:
         self.__root.bind("<Command-Z>", func=self.__redo)
         self.__root.bind("<Control-g>", func=self.__goToLine)
         self.__root.bind("<Command-g>", func=self.__goToLine)
-        self.__root.bind("<Control-=>", func=lambda event: self.__zoomChange(1))
-        self.__root.bind("<Command-=>", func=lambda event: self.__zoomChange(1))
+        self.__root.bind("<Control-=>" if not detect.linux else "+", func=lambda event: self.__zoomChange(1))
+        self.__root.bind("<Command-=>" if not detect.linux else "+", func=lambda event: self.__zoomChange(1))
         self.__root.bind("<Control-minus>", func=lambda event: self.__zoomChange(-1))
         self.__root.bind("<Command-minus>", func=lambda event: self.__zoomChange(-1))
         self.__root.bind("<KeyPress>", func=self.__updateCursorPositionDisplay)
