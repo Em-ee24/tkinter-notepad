@@ -9,7 +9,7 @@ This is a small project which is meant for editing text files.
 ## Requirements:
 
 - Python 3.x
-- Pip
+- Pip (Must be installed separately for Linux users)
 - Tkinter (Usually installed with the python installer)
 
 The requirements from pip so far are listed in the <i>requirements.txt</i> file. These may expand as the program brings more features.
