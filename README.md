@@ -19,12 +19,15 @@ The requirements from pip so far are listed in the <i>requirements.txt</i> file.
 Navigate to the folder in which this program is downloaded using a terminal.
 Then use the command below to install the requirements.
 
-<code>
-$ pip install -r requirements.txt
-</code>
+<code>$ pip install -r requirements.txt</code>
 <br><br>
 
 If the installation of those packages were successful then the program should run.
+
+## Screenshots
+
+![](./Dark%20Theme.png)
+![](./Light%20Theme.png)
 
 ## Contribution
 
